@@ -1,135 +1,254 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurante La Morin</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-        }
-        nav {
-            background-color: #444;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: #fff;
-            margin: 0 10px;
-            text-decoration: none;
-        }
-        .section {
-            padding: 20px;
-            max-width: 1000px;
-            margin: auto;
-        }
-        .menu-section h2, .about-section h2, .contact-section h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .menu-section ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .menu-section li {
-            background-color: #eee;
-            margin: 5px 0;
-            padding: 15px;
-            border-radius: 5px;
-        }
-        .contact-section form input, .contact-section form textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .contact-section form button {
-            padding: 10px 20px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Restaurante La Morin</title>
+  <style>
+    :root{
+      --bg:#f8f8f8;
+      --ink:#333;
+      --ink2:#444;
+      --card:#eee;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+    }
+    a{color:#fff;text-decoration:none}
+
+    /* ===== Hero con logo interactivo ===== */
+    .hero{
+      position:relative;
+      min-height:clamp(320px,56vh,560px);
+      display:grid;
+      place-items:center;
+      background: radial-gradient(1200px 600px at 50% -20%, #ffffff 0 40%, #fff3ed 60%, #ffe7e2 100%);
+      overflow:hidden;
+    }
+    .logo-3d{
+      perspective:1000px;
+      width:min(90vw,500px);
+      aspect-ratio:1/1;
+      position:relative;
+    }
+    .logo-3d__inner{
+      width:100%;
+      height:100%;
+      transform-style:preserve-3d;
+      transition:transform .12s ease, filter .2s ease;
+      will-change:transform,filter;
+    }
+    /* el <img> generado (sin fondo) se inyecta aquí */
+    .logo-3d__img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      filter: drop-shadow(0 14px 26px rgba(0,0,0,.20));
+      transform: translateZ(40px);
+      pointer-events:none;
+    }
+    .logo-3d__gloss{
+      position:absolute; inset:0; pointer-events:none;
+      background: radial-gradient(320px 200px at 30% 10%, rgba(255,255,255,.45), transparent 60%);
+      transform: translateZ(60px);
+      mix-blend-mode:screen;
+      border-radius:24px;
+    }
+    /* Flotado constante cuando no hay interacción */
+    @keyframes floaty {
+      0%   { transform: translateY(0)     rotateX(0) rotateY(0); }
+      50%  { transform: translateY(-8px)  rotateX(1deg) rotateY(-1deg); }
+      100% { transform: translateY(0)     rotateX(0) rotateY(0); }
+    }
+    .idle .logo-3d__inner{ animation: floaty 4.2s ease-in-out infinite; }
+
+    @media (prefers-reduced-motion: reduce){
+      .logo-3d__inner{ transition:none !important; animation:none !important; }
+    }
+
+    /* ===== Tu layout existente ===== */
+    header{ background:var(--ink); color:#fff; padding:20px; text-align:center; }
+    header h1{ margin:0; }
+    nav{ background:var(--ink2); padding:10px; text-align:center; }
+    nav a{ color:#fff; margin:0 10px; }
+    .section{ max-width:1000px; margin:auto; padding:20px; }
+    .menu-section h2,.about-section h2,.contact-section h2{ text-align:center; margin-bottom:10px; }
+    .menu-section ul{ list-style:none; padding:0; }
+    .menu-section li{ background:var(--card); margin:6px 0; padding:15px; border-radius:10px; }
+    .contact-section input,.contact-section textarea{
+      width:100%; padding:12px 14px; margin:6px 0; border:1px solid #ccc; border-radius:10px; font-size:16px;
+    }
+    .contact-section textarea{ min-height:120px; resize:vertical; }
+    .contact-section button{ padding:12px 20px; background:var(--ink); color:#fff; border:0; border-radius:10px; cursor:pointer; }
+    footer{ background:var(--ink); color:#fff; text-align:center; padding:20px; }
+  </style>
 </head>
 <body>
 
-    <!-- Encabezado -->
-    <header>
-        <h1>Restaurante La Morin</h1>
-        <p>Disfruta de los mejores platillos en un ambiente acogedor</p>
-    </header>
+  <!-- ===== HERO con logo interactivo ===== -->
+  <section class="hero">
+    <figure class="logo-3d idle" id="logo3d">
+      <div class="logo-3d__inner" id="logo3dInner">
+        <!-- El <img> sin fondo se inyectará aquí vía JS -->
+        <span class="logo-3d__gloss" aria-hidden="true"></span>
+      </div>
+    </figure>
+  </section>
 
-    <!-- Navegación -->
-    <nav>
-        <a href="#menu">Menú</a>
-        <a href="#about">Nosotros</a>
-        <a href="#contact">Contacto</a>
-    </nav>
+  <!-- ===== Contenido existente ===== -->
+  <header>
+    <h1>Restaurante La Morin</h1>
+    <p>Disfruta de los mejores platillos en un ambiente acogedor</p>
+  </header>
 
-    <!-- Sección del Menú -->
-    <section id="menu" class="section menu-section">
-        <h2>Menú</h2>
-        <ul>
-            <li>
-                <h3>Ensalada César</h3>
-                <p>Lechuga romana, queso parmesano, crutones y aderezo césar - $120 MXN</p>
-            </li>
-            <li>
-                <h3>Pasta Carbonara</h3>
-                <p>Pasta al dente con crema, tocino y queso parmesano - $150 MXN</p>
-            </li>
-            <li>
-                <h3>Filete de Res</h3>
-                <p>Filete jugoso servido con verduras y papas a la francesa - $250 MXN</p>
-            </li>
-            <li>
-                <h3>Postre de Chocolate</h3>
-                <p>Pastel de chocolate servido con helado de vainilla - $80 MXN</p>
-            </li>
-        </ul>
-    </section>
+  <nav>
+    <a href="#menu">Menú</a>
+    <a href="#about">Nosotros</a>
+    <a href="#contact">Contacto</a>
+  </nav>
 
-    <!-- Sección Nosotros -->
-    <section id="about" class="section about-section">
-        <h2>Nosotros</h2>
-        <p>En Restaurante La Morin, nos dedicamos a ofrecer una experiencia culinaria inolvidable. Nuestro equipo de chefs utiliza ingredientes frescos y de alta calidad para preparar platillos que deleiten tu paladar. ¡Ven y descubre por qué somos el restaurante favorito de nuestros clientes!</p>
-    </section>
+  <section id="menu" class="section menu-section">
+    <h2>Menú</h2>
+    <ul>
+      <li><h3>Ensalada César</h3><p>Lechuga romana, queso parmesano, crutones y aderezo césar - $120 MXN</p></li>
+      <li><h3>Pasta Carbonara</h3><p>Pasta al dente con crema, tocino y queso parmesano - $150 MXN</p></li>
+      <li><h3>Filete de Res</h3><p>Filete jugoso servido con verduras y papas a la francesa - $250 MXN</p></li>
+      <li><h3>Postre de Chocolate</h3><p>Pastel de chocolate servido con helado de vainilla - $80 MXN</p></li>
+    </ul>
+  </section>
 
-    <!-- Sección Contacto -->
-    <section id="contact" class="section contact-section">
-        <h2>Contacto</h2>
-        <p>¿Tienes alguna pregunta o quieres hacer una reserva? ¡Contáctanos!</p>
-        <form action="#" method="post">
-            <input type="text" name="nombre" placeholder="Tu Nombre" required>
-            <input type="email" name="email" placeholder="Tu Correo Electrónico" required>
-            <textarea name="mensaje" placeholder="Tu Mensaje" required></textarea>
-            <button type="submit">Enviar Mensaje</button>
-        </form>
-    </section>
+  <section id="about" class="section about-section">
+    <h2>Nosotros</h2>
+    <p>En Restaurante La Morin, nos dedicamos a ofrecer una experiencia culinaria inolvidable. Nuestro equipo de chefs utiliza ingredientes frescos y de alta calidad para preparar platillos que deleiten tu paladar. ¡Ven y descubre por qué somos el restaurante favorito de nuestros clientes!</p>
+  </section>
 
-    <!-- Pie de página -->
-    <footer style="background-color: #333; color: #fff; text-align: center; padding: 20px;">
-        <p>&copy; 2024 Restaurante La Morin - Todos los derechos reservados.</p>
-    </footer>
+  <section id="contact" class="section contact-section">
+    <h2>Contacto</h2>
+    <p>¿Tienes alguna pregunta o quieres hacer una reserva? ¡Contáctanos!</p>
+    <form action="#" method="post">
+      <input type="text" name="nombre" placeholder="Tu Nombre" required>
+      <input type="email" name="email" placeholder="Tu Correo Electrónico" required>
+      <textarea name="mensaje" placeholder="Tu Mensaje" required></textarea>
+      <button type="submit">Enviar Mensaje</button>
+    </form>
+  </section>
 
-    <script>window.$zoho=window.$zoho || {};$zoho.salesiq=$zoho.salesiq||{ready:function(){}}</script><script id="zsiqscript" src="https://salesiq.zohopublic.com/widget?wc=siq1493ca6d85d2222b299286b1b9132666cc5503176349658cda0c3414f13b4d6a" defer></script>
+  <footer>
+    <p>&copy; 2024 Restaurante La Morin - Todos los derechos reservados.</p>
+  </footer>
 
+  <!-- Zoho (tu widget) -->
+  <script>window.$zoho=window.$zoho||{};$zoho.salesiq=$zoho.salesiq||{ready:function(){}};</script>
+  <script id="zsiqscript" src="https://salesiq.zohopublic.com/widget?wc=siq1493ca6d85d2222b299286b1b9132666cc5503176349658cda0c3414f13b4d6a" defer></script>
+
+  <!-- ===== Lógica: movimiento global + eliminación de fondo blanco ===== -->
+  <script>
+    (function(){
+      // === 1) Configura el nombre de tu imagen ===
+      const IMAGE_FILE_NAME = "Logo01k6nntxfh.png"; // <-- cámbialo por tu archivo
+
+      // === 2) Carga y elimina el fondo blanco (tolerancia) ===
+      const WHITE_TOLERANCE = 28; // 0-60 aprox. (sube si queda halo blanco)
+
+      function removeWhiteBg(src){
+        return new Promise((resolve, reject)=>{
+          const img = new Image();
+          img.crossOrigin = "anonymous"; // por si está en mismo dominio/hosting
+          img.onload = ()=>{
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+            const d = imgData.data;
+            for(let i=0;i<d.length;i+=4){
+              const r=d[i], g=d[i+1], b=d[i+2];
+              // distancia a blanco (255,255,255)
+              const dist = Math.sqrt((255-r)*(255-r)+(255-g)*(255-g)+(255-b)*(255-b));
+              if(dist < WHITE_TOLERANCE){
+                d[i+3] = 0; // vuelve transparente
+              }
+            }
+            ctx.putImageData(imgData,0,0);
+            resolve(canvas.toDataURL("image/png"));
+          };
+          img.onerror = reject;
+          img.src = IMAGE_FILE_NAME;
+        });
+      }
+
+      function injectImage(dataUrl){
+        const inner = document.getElementById('logo3dInner');
+        const imgEl = document.createElement('img');
+        imgEl.className = 'logo-3d__img';
+        imgEl.alt = 'Logo';
+        imgEl.src = dataUrl;
+        inner.prepend(imgEl);
+      }
+
+      // === 3) Movimiento con mouse en toda la página + parallax ===
+      const container = document.getElementById('logo3d');
+      const inner = document.getElementById('logo3dInner');
+
+      let idleTimer;
+      const MAX_ROT = 16;   // grados de rotación
+      const MAX_MOVE = 18;  // px de traslación para parallax
+      const SCALE    = 1.04;
+
+      function toIdle(){
+        container.classList.add('idle');
+        inner.style.transform =
+          `translate3d(0,0,0) rotateX(0deg) rotateY(0deg) scale(1)`;
+      }
+      function cancelIdle(){
+        container.classList.remove('idle');
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(toIdle, 1800);
+      }
+      function onPointerMove(clientX, clientY){
+        cancelIdle();
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const cx = vw/2;
+        const cy = vh/2;
+
+        const nx = (clientX - cx) / (vw/2); // -1..1
+        const ny = (clientY - cy) / (vh/2); // -1..1
+
+        const rotY  =  Math.max(-1, Math.min(1, nx)) *  MAX_ROT; // izquierda/derecha
+        const rotX  = -Math.max(-1, Math.min(1, ny)) *  MAX_ROT; // arriba/abajo
+        const movX  =  Math.max(-1, Math.min(1, nx)) *  MAX_MOVE;
+        const movY  =  Math.max(-1, Math.min(1, ny)) *  MAX_MOVE;
+
+        inner.style.transform =
+          `translate3d(${movX}px, ${movY}px, 0)
+           rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${SCALE})`;
+      }
+
+      // Mouse global
+      window.addEventListener('mousemove', (e)=> onPointerMove(e.clientX, e.clientY));
+      // Touch: usa el primer dedo
+      window.addEventListener('touchmove', (e)=>{
+        const t = e.touches[0];
+        if(t) onPointerMove(t.clientX, t.clientY);
+      }, {passive:true});
+      window.addEventListener('mouseleave', toIdle);
+      window.addEventListener('touchend', toIdle, {passive:true});
+
+      // Inicia: quita fondo y monta
+      removeWhiteBg(IMAGE_FILE_NAME)
+        .then(dataUrl => { injectImage(dataUrl); toIdle(); })
+        .catch(()=>{ // si falla, usa la imagen directa
+          injectImage(IMAGE_FILE_NAME); toIdle();
+        });
+    })();
+  </script>
 </body>
 </html>
-
